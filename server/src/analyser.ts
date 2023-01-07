@@ -89,11 +89,6 @@ class AstNode {
 				TokenList = sub.generate(TokenList)
 			}
 			catch (err:any) {
-				err.position.push({
-					start: this.token.start,
-					end: this.token.end,
-					msg: "have a bad sub node: "+err.name,
-				})
 				if(sub.token!==undefined)
 					err.position.push({
 						start: sub.token.start,
