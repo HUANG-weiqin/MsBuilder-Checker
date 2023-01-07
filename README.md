@@ -6,7 +6,7 @@
 This Language Server works for MsBuilder script file. It has the following language features:
 - Completions
 
-- Diagnosing script syntax errors (incomplete)
+- Diagnosing script syntax errors (Not finished yet)
 
 ![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/command.png)
 ![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/closeName.png)
