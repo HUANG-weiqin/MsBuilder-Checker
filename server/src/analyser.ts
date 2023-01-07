@@ -1,8 +1,11 @@
-function Lexer(code) {
+import { integer } from 'vscode-languageserver';
+
+function Lexer(code:string) {
 	const pattern = /<(.|\n)*?>/g
-	tokens = new Array()
+	let tokens = new Array()
+	let m: RegExpExecArray | null;
 	while (m = pattern.exec(code)) {
-		res = new Token(m.index, m[0], m.index + m[0].length)
+		let res = new Token(m.index, m[0], m.index + m[0].length)
 		if (res.type != 0) {
 			tokens.push(res)
 		}
@@ -13,7 +16,12 @@ function Lexer(code) {
 const rule = require('../rule.json')
 
 class Token {
-	constructor(start, raw_string, end) {
+	start:integer
+	raw_string:string
+	end:integer
+	type:integer
+	name:string
+	constructor(start:integer, raw_string:string, end:integer) {
 		this.start = start
 		this.raw_string = raw_string
 		this.end = end
@@ -23,8 +31,12 @@ class Token {
 
 	_get_name() {
 		let patten = /\b[a-z]*\b/gi
-		return patten.exec(this.raw_string)[0]
-	}
+		let res = patten.exec(this.raw_string)
+		if(res){
+			return res[0]
+		}
+		return "???"
+	}	
 
 	_get_type() {
 		let comment = /<!--.*-->/g
@@ -48,11 +60,21 @@ class Token {
 }
 
 class AstNode {
-	generate(TokenList) {
+	token:Token|undefined
+	subNodes:Array<AstNode>
+	constructor(){
+		this.token = undefined
+		this.subNodes = new Array()
+	}
+
+	generate(TokenList:Array<Token>):Array<Token> {
 		this.token = TokenList.shift()
+		
 		this.check_open()
 
-		this.subNodes = new Array()
+		if(this.token === undefined){
+			return TokenList
+		}
 
 		if (this.token.type == 3) {
 			return TokenList
@@ -66,11 +88,18 @@ class AstNode {
 			try {
 				TokenList = sub.generate(TokenList)
 			}
-			catch (err) {
+			catch (err:any) {
 				err.position.push({
 					start: this.token.start,
-					end: this.token.end
+					end: this.token.end,
+					msg: "have a bad sub node: "+err.name,
 				})
+				if(sub.token!==undefined)
+					err.position.push({
+						start: sub.token.start,
+						end: sub.token.end,
+						msg: "Bad sub node",
+					})
 				throw err
 			}
 
@@ -80,19 +109,25 @@ class AstNode {
 		return this.check_close(TokenList)
 	}
 
-	check_sub_node(subNode) {
+	check_sub_node(subNode:AstNode) {
+		if(subNode === undefined || this.token === undefined || subNode.token === undefined){
+			return
+		}
+
 		if (this.token.name in rule && !rule[this.token.name].includes(subNode.token.name)) {
 			let err = {
-				msg: "this should not be here ",
+				msg: "bad node",
 				name: subNode.token.name,
 				position: [
 					{
 						start: this.token.start,
-						end: this.token.end
+						end: this.token.end,
+						msg: " sub node <" +subNode.token.name+ ">  not allowed !",
 					},
 					{
 						start: subNode.token.start,
-						end: subNode.token.end
+						end: subNode.token.end,
+						msg: "this should not be here ",
 					},
 				]
 			}
@@ -103,40 +138,52 @@ class AstNode {
 	}
 
 	check_open() {
+		if(this.token === undefined){
+			return
+		}
 		if (this.token.type == 2) {
 			let err = {
 				msg: "should not be close",
 				name: this.token.name,
 				position: [{
 					start: this.token.start,
-					end: this.token.end
+					end: this.token.end,
+					msg: "should not be close"
 				}]
 			}
 			throw err
 		}
 	}
 
-	check_close(TokenList) {
+	check_close(TokenList:Array<Token>):Array<Token> {
+		if(this.token === undefined){
+			return TokenList
+		}
 		if (TokenList.length == 0) {
 			let err = {
 				msg: "not yet close ",
 				name: this.token.name,
 				position: [{
 					start: this.token.start,
-					end: this.token.end
+					end: this.token.end,
+					msg: "not yet close "
 				}]
 			}
 			throw err
 		}
 		else {
 			let c = TokenList.shift()
+			if(c === undefined){
+				return TokenList
+			}
 			if (c.name != this.token.name) {
 				let err = {
 					msg: "not the same close name",
 					name: c.name,
 					position: [{
-						start: this.token.start,
-						end: this.token.end
+						start: c.start,
+						end: c.end,
+						msg: "not the same close name"
 					}]
 				}
 				throw err
@@ -146,14 +193,14 @@ class AstNode {
 	}
 }
 
-export function check(code) {
-	res = Lexer(code)
-	node = new AstNode()
+export function check(code:string):any|undefined{
+	let res = Lexer(code)
+	let node = new AstNode()
 	try{
 		node.generate(res)
 	}
 	catch(e){
 		return e
 	}
-	return;
+	return undefined;
 }

@@ -14,12 +14,15 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	integer
 } from 'vscode-languageserver/node';
 
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
+
+import {check} from './analyser'
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -105,7 +108,7 @@ connection.onDidChangeConfiguration(change => {
 	}
 
 	// Revalidate all open text documents
-	documents.all().forEach(validateTextDocument);
+	documents.all().forEach(msbValidateTextDocument);
 });
 
 function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
@@ -131,9 +134,32 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
+	msbValidateTextDocument(change.document);
 });
 
+async function msbValidateTextDocument(textDocument: TextDocument): Promise<void> {
+	let res = check(textDocument.getText());
+	const diagnostics: Diagnostic[] = [];
+	if(res !== undefined)
+		res.position.forEach((element: { start: integer; end: integer; msg:string}) => {
+			console.log(element.start)
+			console.log(element.end)
+
+			const diagnostic: Diagnostic = {
+				severity: DiagnosticSeverity.Warning,
+				range: {
+					start: textDocument.positionAt(element.start),
+					end: textDocument.positionAt(element.end)
+				},
+				message: element.msg,
+				source: res.name
+			};
+			diagnostics.push(diagnostic)
+		});
+
+	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+}
+/*
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
@@ -180,11 +206,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
+*/
 
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
+	//connection.console.log('We received an file change event');
 });
+
+const completion = require('../completion.json')
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
@@ -192,9 +221,10 @@ connection.onCompletion(
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
+		/*
 		return [
 			{
-				label: 'TypeScript',
+				label: 'TypeScriptt',
 				kind: CompletionItemKind.Text,
 				data: 1
 			},
@@ -203,7 +233,8 @@ connection.onCompletion(
 				kind: CompletionItemKind.Text,
 				data: 2
 			}
-		];
+		];*/
+		return completion.keys;
 	}
 );
 

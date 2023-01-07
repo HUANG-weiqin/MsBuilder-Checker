@@ -1,4 +1,4 @@
 {
-    "Project":["PropertyGroup","ItemGroup","Choose"],
-    "Target ":["CSC"]
+    "Project":["PropertyGroup","ItemGroup","Choose","Target"],
+    "Target ":["CSC","MakeDir","Delete"]
 }

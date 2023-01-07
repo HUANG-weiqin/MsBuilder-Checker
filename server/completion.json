@@ -1,0 +1,36 @@
+{
+	"keys":[
+		{
+			"label": "Project"
+		},
+		{
+			"label": "Project >",
+			"insertText":"<Project> </Project>"
+		},
+		{
+			"label": "PropertyGroup"
+		},
+		{
+			"label": "PropertyGroup >",
+			"insertText":"<PropertyGroup> </PropertyGroup>"
+		},
+		{
+			"label": "Target"
+		},
+		{
+			"label": "Target >",
+			"insertText":"<Target> </Target>"
+		},
+		{
+			"label": "ItemGroup"
+		},
+		{
+			"label": "ItemGroup >",
+			"insertText":"<ItemGroup> </ItemGroup>"
+		},
+		{
+			"label": "DefaultTargets",
+			"insertText":"DefaultTargets=\"\""
+		}
+	]
+}
