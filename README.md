@@ -10,8 +10,8 @@ This Language Server works for MsBuilder script file. It has the following langu
 
 ![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/command.png)
 ![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/closeName.png)
-![image](https://github.com/lexsaints/powershell/blob/master/IMG/errokey.png)
-![image](https://github.com/lexsaints/powershell/blob/master/IMG/not-same-name.png)
+![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/errokey.png)
+![image](https://github.com/HUANG-weiqin/MsBuilder-Checker/blob/main/img/not-same-name.png)
 
 
 ## Structure
