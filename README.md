@@ -20,6 +20,7 @@ This Language Server works for MsBuilder script file. It has the following langu
 └── server // Language Server
     └── src
         └── server.ts // Language Server entry point
+        └── analyser.ts // AST Syntax checking module
 ```
 
 ## Running the Sample
