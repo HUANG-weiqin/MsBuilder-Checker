@@ -1,11 +1,11 @@
-# MsBuilder language support(Incomplete)
+# MsBuilder language support
 
 
 ## Functionality
 
 This Language Server works for MsBuilder script file. It has the following language features:
 - Completions
-- Diagnosing script syntax errors
+- Diagnosing script syntax errors (incomplete)
 
 
 ## Structure
