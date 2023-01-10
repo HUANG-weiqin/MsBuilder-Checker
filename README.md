@@ -37,6 +37,6 @@ This Language Server works for MsBuilder script file. It has the following langu
 - Switch to the Run and Debug View in the Sidebar (Ctrl+Shift+D).
 - Select `Launch Client` from the drop down (if it is not already).
 - Press ▷ to run the launch config (F5).
-- In the instance of VSCode, open a document with '.xml'.
+- In the instance of VSCode, open a Msbuilder script document .
 - Ctrl+Shift+B and Type into a command "CheckMsBuilderXML" to activate this plugin for Msbuilder script
 
